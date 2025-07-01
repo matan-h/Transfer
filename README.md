@@ -47,6 +47,9 @@ from [IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/com.matanh.transfer)
   <a href="https://apt.izzysoft.de/fdroid/index/apk/com.matanh.transfer">
     <img alt="Get it on IzzyOnDroid" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="54">
   </a>
+  <a href="http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://app/%7B%22id%22%3A%22com.matanh.transfer%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMatan-h%2FTransfer%22%2C%22author%22%3A%22Matan-h%22%2C%22name%22%3A%22Transfer%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%7D%22%7D">
+    <img height="54" src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true" alt="Obtainium"/>
+  </a>
 
 Directly from [github releases](https://github.com/matan-h/Transfer/releases) (You can also point Obtainium to this link.)
 
