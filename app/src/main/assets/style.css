@@ -433,6 +433,140 @@ footer {
     box-shadow: 0 -2px 4px var(--shadow-light);
 }
 
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.refresh-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.refresh-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    background-color: var(--button-background);
+    color: var(--button-text);
+    border: 1px solid var(--divider-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.refresh-button:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.refresh-button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.auto-refresh-status {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 0.4rem 0.8rem;
+    background-color: var(--app-background);
+    border-radius: 4px;
+    border: 1px solid var(--divider-color);
+    min-width: 120px;
+    text-align: center;
+}
+
+.auto-refresh-status.active {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+.settings-button {
+    background: none;
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+    padding: 0.4rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+    background-color: var(--button-background);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.settings-button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.settings-form {
+    text-align: left;
+    margin: 1rem 0;
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+}
+
+.setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.setting-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+}
+
+.setting-item input[type="number"] {
+    width: 80px;
+    padding: 0.4rem;
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+    background-color: var(--card-background);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.setting-item small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .refresh-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
 /* Custom Modal for Confirmation */
 .modal-overlay {
     display: none;

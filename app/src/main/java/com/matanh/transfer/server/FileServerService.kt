@@ -254,11 +254,11 @@ class FileServerService : Service(), SharedPreferences.OnSharedPreferenceChangeL
 
                 val serviceProvider = { this@FileServerService }
                 ktorServer =
-                    embeddedServer(CIO, port = Constants.SERVER_PORT, host = "0.0.0.0", module = {
+                    embeddedServer(CIO, port = Constants.SERVER_PORT, host = "0.0.0.0") {
                         ktorServer(
                             applicationContext, serviceProvider, currentSharedFolderUri!!
                         )
-                    }).apply {
+                    }.apply {
                         start(wait = false)
                     }
 
@@ -341,6 +341,19 @@ class FileServerService : Service(), SharedPreferences.OnSharedPreferenceChangeL
         sharedPreferences.getString(getString(R.string.pref_key_server_password), null)
 
     fun checkPassword(providedPassword: String): Boolean = getServerPassword() == providedPassword
+
+    fun getRefreshSettings(): RefreshSettings {
+        val enabled = sharedPreferences.getBoolean("refresh_enabled", true)
+        val intervalSeconds = sharedPreferences.getInt("refresh_interval_seconds", 30)
+        return RefreshSettings(enabled, intervalSeconds)
+    }
+
+    fun setRefreshSettings(settings: RefreshSettings) {
+        sharedPreferences.edit()
+            .putBoolean("refresh_enabled", settings.enabled)
+            .putInt("refresh_interval_seconds", settings.intervalSeconds)
+            .apply()
+    }
 
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(

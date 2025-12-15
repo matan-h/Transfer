@@ -53,9 +53,9 @@ This setup live-reloads the site and forwards `/api/*` requests to the emulator.
 
 - for code changes, Use commit messages with tags, e.g.:
 
-  - `fix(server): handle large file uploads`
-  - `feat(main): add new button`
-  - `tests: add tests for upload endpoint`
+  - `fix(server): improve error handling for large file uploads`
+  - `feat(ui): add progress indicator for file transfers`
+  - `perf(server): optimize streaming for multi-GB files`
 
 - Fork the repo and create a branch for your change.
 - Open a pull request
