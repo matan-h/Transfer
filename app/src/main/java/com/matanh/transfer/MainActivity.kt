@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -148,9 +150,17 @@ class MainActivity : AppCompatActivity() {
             currentSelectedFolderUri = uri
             if (uri != null) {
                 // If URI is valid, ensure the server is started with it
-                startFileServer(uri)
-                lifecycleScope.launch {
-                    shareHandler.handleIntent(intent, currentSelectedFolderUri)}
+                val sharedPrefs = getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+                val autoStartEnabled = sharedPrefs.getBoolean(
+                    getString(R.string.pref_key_auto_start_server_disabled),
+                    true
+                )
+                if(autoStartEnabled) {
+                    startFileServer(uri)
+                    lifecycleScope.launch {
+                        shareHandler.handleIntent(intent, currentSelectedFolderUri)
+                    }
+                }
             } else {
                 // If no URI is set, guide the user to settings
                 navigateToSettingsWithMessage(getString(R.string.select_shared_folder_prompt))
