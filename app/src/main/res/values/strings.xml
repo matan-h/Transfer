@@ -47,6 +47,9 @@
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
 
+    <string name="pref_key_auto_start_server_disabled" translatable="false">auto_start_disabled</string>
+    <string name="pref_title_auto_start_server" translatable="false">Auto Start Server</string>
+    <string name="pref_key_auto_start_server_summary" translatable="false">Auto‑start the server on app launch</string>
     <string name="pref_category_security">Security</string>
     <string name="pref_title_ip_permission">Display Permission Dialog</string>
     <string name="pref_summary_ip_permission">Ask for permission for new IPs. Valid for 1 hour.</string>
@@ -134,6 +137,5 @@
     <string name="qr_code_content_description">QR code for server connection</string>
     <string name="qr_code_generation_failed">Failed to generate QR code</string>
     <string name="no_ip_available">No IP address available</string>
-
 
 </resources>

@@ -88,6 +88,15 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
 
+            // SwitchPreferenceCompat
+            val autoStartSwitch =
+                findPreference<Preference>(getString(R.string.pref_key_auto_start_server_disabled))
+
+            autoStartSwitch?.setOnPreferenceChangeListener { preference, newValue ->
+                val isEnabled = newValue as Boolean
+                true
+            }
+
             // Folder Selection Preference
             val folderPreference = findPreference<Preference>("pref_key_shared_folder")
             folderPreference?.setOnPreferenceClickListener {

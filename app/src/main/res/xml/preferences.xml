@@ -21,6 +21,11 @@
         app:key="pref_key_shared_folder"
         app:title="Shared Folder"
         app:summary="Select the folder to share" />
-
+    
+    <SwitchPreferenceCompat
+        app:key="@string/pref_key_auto_start_server_disabled"
+        app:title="@string/pref_title_auto_start_server"
+        app:summary="@string/pref_key_auto_start_server_summary"
+        app:defaultValue="true" />
 
 </PreferenceScreen>
