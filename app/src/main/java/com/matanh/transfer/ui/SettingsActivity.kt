@@ -88,7 +88,7 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
 
-             // SwitchPreferenceCompat
+            // SwitchPreferenceCompat
             val autoStartSwitch =
                 findPreference<Preference>(getString(R.string.pref_key_auto_start_server_disabled))
 

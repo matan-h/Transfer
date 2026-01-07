@@ -28,5 +28,4 @@
         app:summary="@string/pref_key_auto_start_server_summary"
         app:defaultValue="true" />
 
-
 </PreferenceScreen>
