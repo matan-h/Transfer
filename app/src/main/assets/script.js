@@ -127,6 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderFiles(files) {
         filesTableBody.innerHTML = ''; // Clear existing files
+        // clear selected
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+        updateDownloadButtonLabel();
+
         if (!files || files.length === 0) {
             noFilesMessage.style.display = 'block';
             downloadAllZipButton.style.display = 'none'; // Hide button if no files
@@ -251,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     noFilesMessage.style.display = 'block';
                     downloadAllZipButton.style.display = 'none';
                 }
+                updateDownloadButtonLabel()
                 // Optionally show a temporary success message
                 console.log(`Successfully deleted: ${fileName}`);
             } else {
@@ -265,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Failed to send delete request:', error);
             showError(
-               `Failed to send delete request for "${fileName}". Please check network.`
+                `Failed to send delete request for "${fileName}". Please check network.`
             )
         }
     }
@@ -295,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const files = event.dataTransfer.files;
         if (files.length > 0) {
             // validate there are no folders.
-            if (!([...event.dataTransfer.items].every(item => item.webkitGetAsEntry()?.isFile))){
+            if (!([...event.dataTransfer.items].every(item => item.webkitGetAsEntry()?.isFile))) {
                 showError("Folders aren't supported. Compress them as ZIP first.");
                 return
             }
@@ -445,33 +451,33 @@ document.addEventListener('DOMContentLoaded', () => {
             checked.length > 0 && checked.length < all.length;
 
         updateDownloadButtonLabel();
-});
-const downloadZip = (files) => {
-    //this is a workaround to make the user download when the request start
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/api/zip';
-    form.style.display = 'none';
-
-    files.forEach(file => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'f';
-        input.value = file;
-        form.appendChild(input);
     });
+    const downloadZip = (files) => {
+        //this is a workaround to make the user download when the request start
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/api/zip';
+        form.style.display = 'none';
 
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-};
+        files.forEach(file => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'f';
+            input.value = file;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    };
 
     downloadAllZipButton.addEventListener("click", () => {
-      const selectedCheckboxes = filesTableBody.querySelectorAll(
-        ".file-select:checked",
-      );
-      const files = [...selectedCheckboxes].map(cb=>cb.dataset.fileName)
-      downloadZip(files)
+        const selectedCheckboxes = filesTableBody.querySelectorAll(
+            ".file-select:checked",
+        );
+        const files = [...selectedCheckboxes].map(cb => cb.dataset.fileName)
+        downloadZip(files)
 
     });
 
