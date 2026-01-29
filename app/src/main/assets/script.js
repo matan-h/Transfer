@@ -6,8 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const noFilesMessage = document.getElementById('no-files-message');
     const themeToggleButton = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
-    const downloadAllZipButton = document.getElementById('download-all-zip-button');
     const pasteButton = document.getElementById('paste-button');
+    const downloadAllZipButton = document.getElementById('download-all-zip-button');
+
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+
+
 
     // Modal elements
     const confirmationModalOverlay = document.getElementById('confirmation-modal-overlay');
@@ -135,6 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = filesTableBody.insertRow();
             // Dynamically add data attributes for easy access
             row.dataset.fileName = file.name;
+
+            // Checkbox:select
+            const checkCell = row.insertCell();
+            checkCell.dataset.label = 'Select';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'file-select';
+            checkbox.dataset.fileName = file.name;
+            checkCell.appendChild(checkbox);
 
             // Add data-label attributes for responsive CSS
             const nameCell = row.insertCell();
@@ -379,10 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
 
-    downloadAllZipButton.addEventListener('click', () => {
-        window.location.href = '/api/zip';
-    });
-
     pasteButton.addEventListener('click', async () => {
         try {
             const text = await navigator.clipboard.readText();
@@ -408,6 +417,62 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Failed to read clipboard contents: ', err);
             showError('Failed to read clipboard. Please grant clipboard permissions.', 'error');
         }
+    });
+    function updateDownloadButtonLabel() {
+        const all = filesTableBody.querySelectorAll('.file-select');
+        const checkedCount = filesTableBody.querySelectorAll('.file-select:checked').length;
+
+        downloadAllZipButton.textContent = (checkedCount === 0 || checkedCount === all.length)
+            ? 'Download All as Zip'
+            : `Download Selected (${checkedCount})`;
+
+    }
+
+    // select files
+    selectAllCheckbox.addEventListener('change', () => {
+        const all = filesTableBody.querySelectorAll('.file-select');
+        all.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        updateDownloadButtonLabel();
+    });
+    filesTableBody.addEventListener('change', (e) => {
+        if (!e.target.classList.contains('file-select')) return;
+
+        const all = filesTableBody.querySelectorAll('.file-select');
+        const checked = filesTableBody.querySelectorAll('.file-select:checked');
+
+        selectAllCheckbox.checked = (all.length === checked.length);
+        selectAllCheckbox.indeterminate =
+            checked.length > 0 && checked.length < all.length;
+
+        updateDownloadButtonLabel();
+});
+const downloadZip = (files) => {
+    //this is a workaround to make the user download when the request start
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/api/zip';
+    form.style.display = 'none';
+
+    files.forEach(file => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'f';
+        input.value = file;
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+};
+
+    downloadAllZipButton.addEventListener("click", () => {
+      const selectedCheckboxes = filesTableBody.querySelectorAll(
+        ".file-select:checked",
+      );
+      const files = [...selectedCheckboxes].map(cb=>cb.dataset.fileName)
+      downloadZip(files)
+
     });
 
     // Initial load of files when the page is ready

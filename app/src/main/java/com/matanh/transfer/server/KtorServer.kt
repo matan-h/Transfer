@@ -34,7 +34,9 @@ import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.receiveChannel
 import io.ktor.server.request.receiveMultipart
+import io.ktor.server.request.receiveParameters
 import io.ktor.server.request.receiveText
+import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.RoutingCall
@@ -231,6 +233,70 @@ fun handleFileDelete(
         false to "Failed to delete file: $fileName"
     }
 }
+suspend fun handleZipDownload(
+    call: RoutingCall,
+    context: Context,
+    baseDocumentFile: DocumentFile,
+    requestedFileNames: List<String>?
+) {
+    val allFiles = baseDocumentFile.listFiles().filter { it.isFile && it.canRead() }
+
+    // Logic: If requestedFileNames is null or empty, take everything.
+    // Otherwise, filter allFiles to match the names in requestedFileNames.
+    val filesToZip = if (requestedFileNames.isNullOrEmpty()) {
+        allFiles
+    } else {
+        allFiles.filter { it.name in requestedFileNames }
+    }
+
+    if (filesToZip.isEmpty()) {
+        return call.respondText(
+            text = "No files found to zip",
+            status = HttpStatusCode.UnprocessableEntity
+        )
+
+    }
+
+    val zipFileName = "transfer_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.zip"
+
+    try {
+        call.respond(object : OutgoingContent.WriteChannelContent() {
+            override val contentType: ContentType = ContentType.Application.Zip
+            override val headers: Headers = headersOf(
+                HttpHeaders.ContentDisposition,
+                ContentDisposition.Attachment.withParameter(
+                    ContentDisposition.Parameters.FileName,
+                    zipFileName
+                ).toString()
+            )
+
+            override suspend fun writeTo(channel: ByteWriteChannel) {
+                withContext(Dispatchers.IO) {
+                    val outputStream: OutputStream = channel.toOutputStream()
+                    ZipOutputStream(outputStream).use { zipOut ->
+                        val buffer = ByteArray(256 * 1024)
+                        for (file in filesToZip) {
+                            val name = file.name ?: continue
+                            zipOut.putNextEntry(ZipEntry(name))
+                            context.contentResolver.openInputStream(file.uri)?.use { input ->
+                                var read: Int
+                                while (input.read(buffer).also { read = it } != -1) {
+                                    zipOut.write(buffer, 0, read)
+                                }
+                            }
+                            zipOut.closeEntry()
+                        }
+                    }
+                }
+            }
+        })
+    } catch (e: Exception) {
+        logger.e(e, "Error zipping files")
+        if (!call.response.isCommitted) {
+            call.respond(HttpStatusCode.InternalServerError, "Zip Error: ${e.localizedMessage}")
+        }
+    }
+}
 
 // --- Ktor Application Module ---
 fun Application.ktorServer(
@@ -374,65 +440,15 @@ fun Application.ktorServer(
                     handleFileDownload(call, applicationContext, baseDocumentFile, fileNameEncoded)
                 }
                 get("/zip") {
-                    try {
-                        val filesToZip = baseDocumentFile.listFiles().filter { it.isFile && it.canRead() }
-
-                        if (filesToZip.isEmpty()) {
-                            call.respond(HttpStatusCode.NoContent, "No files to zip.")
-                            return@get
-                        }
-
-                        val zipFileName = "transfer_files_${
-                            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(
-                                Date()
-                            )
-                        }.zip"
-
-                        call.respond(object : OutgoingContent.WriteChannelContent() {
-                            override val contentType: ContentType = ContentType.Application.Zip
-                            override val headers: Headers = headersOf(
-                                HttpHeaders.ContentDisposition,
-                                ContentDisposition.Attachment.withParameter(
-                                    ContentDisposition.Parameters.FileName,
-                                    zipFileName
-                                ).toString()
-                            )
-
-                            override suspend fun writeTo(channel: ByteWriteChannel) {
-                                withContext(Dispatchers.IO) {
-                                    val outputStream: OutputStream = channel.toOutputStream()
-                                    ZipOutputStream(outputStream).use { zipOutputStream ->
-                                        val buffer = ByteArray(256 * 1024) // 256 KB chunks
-
-                                        for (file in filesToZip) {
-                                            if (file.name == null) {
-                                                logger.w("Skipping file with null name: ${file.uri}")
-                                                continue
-                                            }
-                                            val entry = ZipEntry(file.name)
-                                            zipOutputStream.putNextEntry(entry)
-
-                                            applicationContext.contentResolver.openInputStream(file.uri)?.use { inputStream ->
-                                                var bytesRead: Int
-                                                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                                                    zipOutputStream.write(buffer, 0, bytesRead)
-                                                }
-                                            } ?: logger.e("Could not open input stream for file: ${file.name}")
-
-                                            zipOutputStream.closeEntry()
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    } catch (e: Exception) {
-                        logger.e(e, "Error zipping files $e")
-                        call.respond(
-                            HttpStatusCode.InternalServerError,
-                            ErrorResponse("Error creating zip archive: ${e.localizedMessage}")
-                        )
-                    }
+                    handleZipDownload(call, applicationContext, baseDocumentFile,null)
                 }
+                post("/zip"){
+                    val files = call.receiveParameters().getAll("f")
+
+                    handleZipDownload(call, applicationContext, baseDocumentFile, files)
+
+                }
+
 
                 post("/upload") {
                     var filesUploadedCount = 0

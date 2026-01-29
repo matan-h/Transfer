@@ -218,32 +218,39 @@ button:hover {
 }
 
 /* Optimized column widths for a more spacious and readable table */
+/* 1:checkbox */
 #files-table th:nth-child(1),
 #files-table td:nth-child(1) {
+    width: 1%;
+}
+
+
+#files-table th:nth-child(2),
+#files-table td:nth-child(2) {
     width: 30%;
 }
 
 /* Name */
-#files-table th:nth-child(2),
-#files-table td:nth-child(2) {
+#files-table th:nth-child(3),
+#files-table td:nth-child(3) {
     width: 12%;
 }
 
 /* Size */
-#files-table th:nth-child(3),
-#files-table td:nth-child(3) {
+#files-table th:nth-child(4),
+#files-table td:nth-child(4) {
     width: 23%;
 }
 
 /* Last Modified */
-#files-table th:nth-child(4),
-#files-table td:nth-child(4) {
+#files-table th:nth-child(5),
+#files-table td:nth-child(5) {
     width: 20%;
 }
 
 /* Type */
-#files-table th:nth-child(5),
-#files-table td:nth-child(5) {
+#files-table th:nth-child(6),
+#files-table td:nth-child(6) {
     width: 15%;
     text-align: right;
 }
