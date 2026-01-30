@@ -1,0 +1,2 @@
+New features:
+* web: added multi-select option (#78)
