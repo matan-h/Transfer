@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        #file-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #file-list li {
+            margin-bottom: 10px;
+        }
+
+        #file-list a {
+            font-size: 24px;
+            color: black;
+            text-decoration: underline;
+        }
+
+        #error-message {
+            color: #cc0000;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Available Files</h1>
+    <ul id="file-list"></ul>
+    <p id="error-message"></p>
+
+    <script>
+        function loadFiles() {
+            var fileList = document.getElementById('file-list');
+            var errorMessage = document.getElementById('error-message');
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        var data = JSON.parse(xhr.responseText);
+                        var files = data.files;
+                        var i, len, file, li, a, fragment;
+
+                        if (!files || files.length === 0) {
+                            errorMessage.innerHTML = 'No files available for download.';
+                            return;
+                        }
+
+                        // Use DocumentFragment for batch DOM update (much faster on old devices)
+                        fragment = document.createDocumentFragment();
+
+                        for (i = 0, len = files.length; i < len; i++) {
+                            file = files[i];
+                            li = document.createElement('li');
+                            a = document.createElement('a');
+                            a.href = file.downloadUrl;
+                            a.setAttribute('download', file.name);
+                            a.innerHTML = file.name;
+                            li.appendChild(a);
+                            fragment.appendChild(li);
+                        }
+
+                        // Single DOM update - triggers only one reflow
+                        fileList.appendChild(fragment);
+
+                    } catch (error) {
+                        errorMessage.innerHTML = 'Error loading files. Please try again later.';
+                    }
+                } else if (xhr.readyState === 4) {
+                    errorMessage.innerHTML = 'Error loading files. Please try again later.';
+                }
+            };
+
+            xhr.open('GET', '/api/files', true);
+            xhr.send();
+        }
+
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', loadFiles);
+        } else {
+            window.onload = loadFiles;
+        }
+    </script>
+</body>
+
+</html>
