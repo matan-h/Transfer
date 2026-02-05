@@ -5,6 +5,8 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.matanh.transfer.util.FileUtils
 import com.matanh.transfer.R
+import com.matanh.transfer.util.FileUtils.generateUniqueFileName
+import com.matanh.transfer.util.FileUtils.toReadableFileSize
 import io.ktor.http.ContentDisposition
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -185,8 +187,7 @@ suspend fun handleFileUpload(
     // 2. Generate a unique filename
     val nameWithoutExt = sanitizedFileName.substringBeforeLast('.', sanitizedFileName)
     val extension = sanitizedFileName.substringAfterLast('.', "")
-    val uniqueFileName =
-        FileUtils.generateUniqueFileName(baseDocumentFile, nameWithoutExt, extension)
+    val uniqueFileName = baseDocumentFile.generateUniqueFileName(nameWithoutExt, extension)
 
     // Always create with no specific mime (prevent the provider from adding a file extension)
     val effectiveMimeType = ContentType.Application.OctetStream.toString()
@@ -410,7 +411,7 @@ fun Application.ktorServer(
                                 FileInfo(
                                     name = docFile.name ?: "Unknown",
                                     size = docFile.length(),
-                                    formattedSize = FileUtils.formatFileSize(docFile.length()),
+                                    formattedSize = docFile.length().toReadableFileSize(),
                                     lastModified = dateFormat.format(lastModifiedDate),
                                     type = docFile.type ?: "unknown",
                                     downloadUrl = "/api/download/${

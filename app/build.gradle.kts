@@ -105,8 +105,11 @@ dependencies {
 
     androidTestImplementation (libs.awaitility.kotlin)
 
-    // QR Code generation
-    implementation(libs.zxing.core)
-    implementation(libs.zxing.android.embedded)
+    // new added libraries
+    implementation(libs.mmkv)
+    implementation(libs.glide)
+    implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.qr.generator)
 
 }

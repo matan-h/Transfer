@@ -18,7 +18,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.*
-import com.matanh.transfer.ui.SetupActivity
 import com.matanh.transfer.util.Constants
 import com.matanh.transfer.util.FileAdapter
 import kotlinx.serialization.json.Json

@@ -8,6 +8,32 @@
     <string name="settings">Settings</string>
     <string name="action_settings">Action Settings</string>
 
+
+    <string name="ip_entry_format">%1$s %2$s</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="system">System</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="additional_settings">Additional settings</string>
+    <string name="high_contrast_dark_theme">High contrast dark theme</string>
+    <string name="des_amoled_theme">Pure black theme for devices with OLED panel</string>
+    <string name="dynamic_colors">Dynamic colors</string>
+    <string name="des_dynamic_colors">Automatically set the app theme according to the device wallpaper</string>
+    <string name="vibration">Haptics and vibration</string>
+    <string name="des_vibration">Interactive haptics for touch feedback</string>
+    <string name="version">Version</string>
+    <string name="changelog">Changelog</string>
+    <string name="social_word_socials">Socials</string>
+    <string name="social_word_telegram">Telegram</string>
+    <string name="social_word_github">Github</string>
+    <string name="social_word_coffee">Buy me a Coffee</string>
+    <string name="msg_our_team">Our Team</string>
+    <string name="common_word_setting">Settings</string>
+    <string name="version_format">v%1$s</string>
+    <string name="back">Back</string>
+    <string name="files_count">Files %d</string>
+    <string name="app_version">v1.0.0</string>
+
     <string name="title_activity_settings">Settings</string>
     <string name="ip_copied_to_clipboard">IP Address copied to clipboard</string>
 

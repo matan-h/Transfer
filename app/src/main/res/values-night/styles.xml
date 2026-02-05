@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style
+        name="DialogTitleAppearance"
+        parent="TransferApp.AppTheme">
+        <item name="android:alpha">0.85</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadlineSmall</item>
+    </style>
+
+    <style
+        name="DialogDescriptionAppearance"
+        parent="TransferApp.AppTheme">
+        <item name="android:alpha">0.85</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
+</resources>

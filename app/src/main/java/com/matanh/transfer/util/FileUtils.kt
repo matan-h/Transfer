@@ -1,6 +1,6 @@
 package com.matanh.transfer.util
 
-import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,61 +9,45 @@ import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.math.ln
+import kotlin.math.pow
 
 object FileUtils {
-    fun getFileName(context: Context, uri: Uri): String? {
-        var name: String? = null
-        if (uri.scheme == "content") {
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            cursor?.use {
-                if (it.moveToFirst()) {
-                    val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (nameIndex != -1) {
-                        name = it.getString(nameIndex)
-                    }
-                }
+    fun Context.getFileName(uri: Uri): String = when (uri.scheme) {
+        ContentResolver.SCHEME_CONTENT -> contentResolver.query(
+            uri,
+            arrayOf(OpenableColumns.DISPLAY_NAME),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+                cursor.takeIf { it.moveToFirst() }?.getString(0)
             }
-        }
-        if (name == null) {
-            name = uri.path
-            val cut = name?.lastIndexOf('/')
-            if (cut != -1 && cut != null) {
-                name = name?.substring(cut + 1)
-            }
-        }
-        return name ?: "unknown_file"
-    }
 
-    suspend fun generateUniqueFileName(
-        docDir: DocumentFile,
-        name: String,
-        extension: String,
-        startFromOne: Boolean = false
+        else -> uri.lastPathSegment
+    } ?: "unknown_file"
+
+    suspend fun DocumentFile.generateUniqueFileName(
+        baseName: String, extension: String, startFromOne: Boolean = false
     ): String = withContext(Dispatchers.IO) {
-        // If we’re not starting from 1, try the plain name first:
-        if (!startFromOne) {
-            val plainName = "$name.$extension"
-            if (docDir.findFile(plainName) == null) {
-                return@withContext plainName
-            }
+
+        fun candidate(index: Int) = "$baseName${if (index == 0) "" else "_$index"}.$extension"
+
+        if (!startFromOne && findFile(candidate(0)) == null) {
+            return@withContext candidate(0)
         }
-        var count = if (startFromOne) 1 else 2
-        var candidate: String
 
-        do {
-            candidate = "${name}_$count.$extension"
-            count++
-        } while (docDir.findFile(candidate) != null)
+        var index = if (startFromOne) 1 else 2
+        while (findFile(candidate(index)) != null) {
+            index++
+        }
 
-        return@withContext candidate
+        candidate(index)
     }
 
     suspend fun copyUriToAppDir(
-        context: Context,
-        sourceUri: Uri,
-        destinationDirUri: Uri,
-        filename: String
-    ): DocumentFile? = withContext(Dispatchers.IO){
+        context: Context, sourceUri: Uri, destinationDirUri: Uri, filename: String
+    ): DocumentFile? = withContext(Dispatchers.IO) {
         val resolver = context.contentResolver
         val docDir = DocumentFile.fromTreeUri(context, destinationDirUri) ?: return@withContext null
 
@@ -72,7 +56,7 @@ object FileUtils {
 
 
         // Check if file exists, if so, create a unique name
-        var finalFileName = generateUniqueFileName(docDir, nameWithoutExt, ext)
+        val finalFileName = docDir.generateUniqueFileName(nameWithoutExt, ext)
 
 
         val mimeType = resolver.getType(sourceUri) ?: "application/octet-stream"
@@ -93,14 +77,10 @@ object FileUtils {
     }
 
     suspend fun createTextFileInDir(
-        context: Context,
-        dirUri: Uri,
-        name: String,
-        ext: String,
-        content: String
+        context: Context, dirUri: Uri, name: String, ext: String, content: String
     ): DocumentFile? = withContext(Dispatchers.IO) {
         val docDir = DocumentFile.fromTreeUri(context, dirUri) ?: return@withContext null
-        val fileName = generateUniqueFileName(docDir, name, ext, true)
+        val fileName = docDir.generateUniqueFileName(name, ext, true)
 
         val targetFile = docDir.createFile("text/plain", fileName) ?: return@withContext null
         try {
@@ -115,43 +95,52 @@ object FileUtils {
         return@withContext null
     }
 
-    fun persistUriPermission(context: Context, uri: Uri) {
-        val contentResolver = context.contentResolver
-        val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        contentResolver.takePersistableUriPermission(uri, takeFlags)
+    fun Context.persistFolderUri(uri: Uri) {
+        val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-        // Store the URI string for later use
-        val prefs = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(Constants.EXTRA_FOLDER_URI, uri.toString()) }
+        runCatching {
+            contentResolver.takePersistableUriPermission(uri, flags)
+        }.onFailure {
+            // Invalid or non-persistable URI — ignore or log
+            return
+        }
+
+        getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit {
+                putString(Constants.EXTRA_FOLDER_URI, uri.toString())
+            }
     }
 
-    fun isUriPermissionPersisted(context: Context, uri: Uri): Boolean {
-        val persistedUriPermissions = context.contentResolver.persistedUriPermissions
-        return persistedUriPermissions.any { it.uri == uri && it.isReadPermission && it.isWritePermission }
+    fun Context.hasPersistedReadWritePermission(uri: Uri): Boolean =
+        contentResolver.persistedUriPermissions.any {
+            it.uri == uri && it.isReadPermission && it.isWritePermission
+        }
+
+    fun Context.clearPersistedFolderUri() {
+        contentResolver.persistedUriPermissions.firstOrNull { it.isWritePermission }?.let {
+                contentResolver.releasePersistableUriPermission(
+                    it.uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+            }
+
+        // 2. Clear stored reference
+        getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit {
+                remove(Constants.EXTRA_FOLDER_URI)
+            }
     }
 
-    fun clearPersistedUri(context: Context) {
-        val prefs = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { remove(Constants.EXTRA_FOLDER_URI) }
-    }
+    fun Long.toReadableFileSize(): String {
+        if (this <= 0L) return "0 B"
 
-    @SuppressLint("DefaultLocale")
-    @Suppress("ReplaceJavaStaticMethodWithKotlinAnalog")
-    fun formatFileSize(size: Long): String {
-        if (size <= 0) return "0 B"
-        val units = arrayOf("B", "KB", "MB", "GB", "TB")
-        val digitGroups = (Math.log10(size.toDouble()) / Math.log10(1024.0)).toInt()
-        return String.format(
-            "%.1f %s",
-            size / Math.pow(1024.0, digitGroups.toDouble()),
-            units[digitGroups]
+        val units = listOf("B", "KB", "MB", "GB", "TB")
+        val digitGroup = (ln(this.toDouble()) / ln(1024.0)).toInt()
+
+        return "%.1f %s".format(
+            this / 1024.0.pow(digitGroup), units[digitGroup]
         )
     }
 
-    fun canWriteToUri(context: Context, uri: Uri): Boolean {
-        val docFile = DocumentFile.fromTreeUri(context, uri) // Or fromSingleUri if it's not a tree
-        return docFile?.canWrite() == true
-    }
+    fun Uri.canWrite(context: Context): Boolean =
+        DocumentFile.fromTreeUri(context, this)?.canWrite() == true
 
 }

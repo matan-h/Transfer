@@ -13,16 +13,17 @@
 
     <application
         android:name=".util.TransferApp"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TransferApp"
+        android:theme="@style/TransferApp.AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="34">
         <activity
-            android:name=".ui.SetupActivity"
+            android:name=".ui.activity.startup.StartUpActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.main.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
@@ -58,15 +59,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.activity.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".ui.activity.main.MainActivity" />
         <activity
-            android:name=".ui.AboutActivity"
+            android:name=".ui.activity.settings.LookAndFeelActivity"
             android:exported="false"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".ui.activity.settings.SettingsActivity" />
+        <activity
+            android:name=".ui.activity.aboutus.AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activity.main.MainActivity" />
 
         <service
             android:name=".server.FileServerService"

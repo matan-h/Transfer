@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style
+        name="TransferApp.AppTheme"
+        parent="Theme.Material3Expressive.DayNight.NoActionBar"
+        tools:ignore="PrivateResource">
+        <item name="colorSurface">@color/m3_ref_palette_neutral6</item>
+        <item name="colorSurfaceContainerLowest">@color/m3_ref_palette_neutral4</item>
+        <item name="colorSurfaceContainerHigh">@color/m3_ref_palette_neutral12</item>
+        <item name="colorSurfaceContainer">@color/m3_ref_palette_neutral10</item>
+        <item name="toolBarContentScrim">@color/m3_ref_palette_neutral_variant10</item>
+        <item name="colorPrimaryContainer">@color/m3_ref_palette_primary30</item>
+        <item name="colorOnPrimaryContainer">@color/m3_ref_palette_primary90</item>
+        <item name="colorTertiaryContainer">@color/m3_ref_palette_tertiary30</item>
+        <item name="colorOnTertiaryContainer">@color/m3_ref_palette_tertiary90</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Ui3.BottomSheetDialog</item>
+    </style>
+
+    <style
+        name="TransferApp.DynamicColors"
+        parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar"
+        tools:ignore="PrivateResource">
+        <item name="colorSurface">@color/m3_ref_palette_dynamic_neutral_variant6</item>
+        <item name="colorSurfaceContainerLowest">@color/m3_ref_palette_dynamic_neutral_variant4</item>
+        <item name="colorSurfaceContainerHigh">@color/m3_ref_palette_dynamic_neutral12</item>
+        <item name="colorSurfaceContainer">@color/m3_ref_palette_dynamic_neutral10</item>
+        <item name="toolBarContentScrim">@color/m3_ref_palette_dynamic_neutral_variant10</item>
+        <item name="colorPrimaryContainer">@color/m3_ref_palette_dynamic_primary30</item>
+        <item name="colorOnPrimaryContainer">@color/m3_ref_palette_dynamic_primary90</item>
+        <item name="colorTertiaryContainer">@color/m3_ref_palette_dynamic_tertiary30</item>
+        <item name="colorOnTertiaryContainer">@color/m3_ref_palette_dynamic_tertiary90</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Ui3.BottomSheetDialog</item>
+
+    </style>
+
+    <style
+        name="TransferApp.AmoledTheme"
+        parent="Theme.Material3Expressive.DayNight.NoActionBar"
+        tools:ignore="PrivateResource">
+        <item name="android:colorBackground">@color/m3_ref_palette_neutral_variant0</item>
+        <item name="android:windowBackground">@color/m3_ref_palette_neutral_variant0</item>
+        <item name="colorSurface">@color/m3_ref_palette_neutral_variant0</item>
+        <item name="colorSurfaceContainer">@color/m3_ref_palette_neutral6</item>
+        <item name="colorSurfaceContainerLowest">@color/m3_ref_palette_neutral0</item>
+        <item name="colorSurfaceContainerLow">@color/m3_ref_palette_neutral4</item>
+        <item name="colorSurfaceContainerHigh">@color/m3_ref_palette_neutral10</item>
+        <item name="colorSurfaceContainerHighest">@color/m3_ref_palette_neutral0</item>
+        <item name="colorSurfaceBright">@color/m3_ref_palette_neutral10</item>
+        <item name="colorSurfaceDim">@color/m3_ref_palette_neutral0</item>
+        <item name="colorPrimaryContainer">@color/m3_ref_palette_primary30</item>
+        <item name="colorOnPrimaryContainer">@color/m3_ref_palette_primary90</item>
+        <item name="colorTertiaryContainer">@color/m3_ref_palette_tertiary30</item>
+        <item name="colorOnTertiaryContainer">@color/m3_ref_palette_tertiary90</item>
+        <item name="toolBarContentScrim">@color/m3_ref_palette_neutral_variant10</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Ui3.BottomSheetDialog</item>
+
+    </style>
+
+    <style
+        name="TransferApp.AmoledTheme.DynamicColors"
+        parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar"
+        tools:ignore="PrivateResource">
+        <item name="android:colorBackground">@color/m3_ref_palette_dynamic_neutral_variant0</item>
+        <item name="android:windowBackground">@color/m3_ref_palette_dynamic_neutral_variant0</item>
+        <item name="colorSurface">@color/m3_ref_palette_dynamic_neutral_variant0</item>
+        <item name="colorSurfaceContainer">@color/m3_ref_palette_dynamic_neutral6</item>
+        <item name="colorSurfaceContainerLowest">@color/m3_ref_palette_dynamic_neutral0</item>
+        <item name="colorSurfaceContainerLow">@color/m3_ref_palette_dynamic_neutral4</item>
+        <item name="colorSurfaceContainerHigh">@color/m3_ref_palette_dynamic_neutral10</item>
+        <item name="colorSurfaceContainerHighest">@color/m3_ref_palette_dynamic_neutral0</item>
+        <item name="colorSurfaceBright">@color/m3_ref_palette_dynamic_neutral10</item>
+        <item name="colorSurfaceDim">@color/m3_ref_palette_dynamic_neutral0</item>
+        <item name="colorPrimaryContainer">@color/m3_ref_palette_dynamic_primary30</item>
+        <item name="colorOnPrimaryContainer">@color/m3_ref_palette_dynamic_primary90</item>
+        <item name="colorTertiaryContainer">@color/m3_ref_palette_dynamic_tertiary30</item>
+        <item name="colorOnTertiaryContainer">@color/m3_ref_palette_dynamic_tertiary90</item>
+
+        <item name="toolBarContentScrim">@color/m3_ref_palette_dynamic_neutral_variant10</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Ui3.BottomSheetDialog</item>
+
+    </style>
+
+    <style
+        name="BottomNavigation"
+        parent="TransferApp.AppTheme"
+        tools:ignore="PrivateResource">
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
+    <style
+        name="ToolbarContentScrim"
+        parent=""
+        tools:ignore="PrivateResource">
+        <item name="contentScrim">?attr/toolBarContentScrim</item>
+    </style>
+
+    <style
+        name="CategoryContributorsCard"
+        parent="TransferApp.AppTheme">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainer</item>
+    </style>
+
+</resources>

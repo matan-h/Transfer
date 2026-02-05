@@ -2,8 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_share_file_item"
-        android:title="@string/action_share_file"
-        android:icon="@drawable/ic_share"/> <item
-    android:id="@+id/action_delete_file_item"
-    android:title="@string/action_delete_file"
-    android:icon="@drawable/ic_delete"/> </menu>
+        android:icon="@drawable/ic_share"
+        android:title="@string/action_share_file" />
+    <item
+        android:id="@+id/action_delete_file_item"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/action_delete_file" />
+</menu>
