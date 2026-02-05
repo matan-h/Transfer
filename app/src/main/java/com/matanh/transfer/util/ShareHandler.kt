@@ -6,6 +6,7 @@ import android.net.Uri
 import android.widget.Toast
 import com.matanh.transfer.R
 import com.matanh.transfer.ui.MainViewModel
+import com.matanh.transfer.util.FileUtils.getFileName
 
 /**
  * A helper class to process incoming share intents (for text, single files, and multiple files).
@@ -56,8 +57,9 @@ class ShareHandler(
     }
 
     private suspend fun handleSharedFile(intent: Intent, folderUri: Uri) {
+        @Suppress("DEPRECATION")
         val fileUri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM) ?: return
-        val fileName = FileUtils.getFileName(context, fileUri) ?: "shared_file"
+        val fileName = context.getFileName(fileUri)
         val copiedFile = FileUtils.copyUriToAppDir(context, fileUri, folderUri, fileName)
 
         if (copiedFile != null && copiedFile.exists()) {
@@ -76,7 +78,7 @@ class ShareHandler(
 
         var successCount = 0
         for (uri in uris) {
-            val fileName = FileUtils.getFileName(context, uri) ?: "file_${System.currentTimeMillis()}"
+            val fileName = context.getFileName(uri)
             if (FileUtils.copyUriToAppDir(context, uri, folderUri, fileName) != null) {
                 successCount++
             }

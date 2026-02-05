@@ -15,8 +15,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.matanh.transfer.util.Constants
-import com.matanh.transfer.MainActivity
 import com.matanh.transfer.R
+import com.matanh.transfer.ui.activity.main.MainActivity
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer

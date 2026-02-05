@@ -5,107 +5,91 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.matanh.transfer.R
+import com.matanh.transfer.util.FileUtils.toReadableFileSize
 
 class FileAdapter(
     private var files: List<FileItem>,
-    private val onItemClick: (FileItem, Int) -> Unit, // For regular clicks
-    private val onItemLongClick: (FileItem, Int) -> Boolean // For long clicks to start action mode
+    private val onItemClick: (FileItem, Int) -> Unit,
+    private val onItemLongClick: (FileItem, Int) -> Boolean
 ) : RecyclerView.Adapter<FileAdapter.ViewHolder>() {
 
-    private val selectedItems = mutableSetOf<Int>() // Stores positions of selected items
+    private val selectedItems = mutableSetOf<Int>()
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvName: TextView = view.findViewById(R.id.tvFileName)
         val tvSize: TextView = view.findViewById(R.id.tvFileSize)
         val ivSelectionCheck: ImageView = view.findViewById(R.id.ivSelectionCheck)
-        val itemLayout: ConstraintLayout =
-            view as ConstraintLayout // Assuming root is ConstraintLayout
+        val linearBody: MaterialCardView = view.findViewById(R.id.linearBody)
 
         fun bind(file: FileItem, position: Int, isSelected: Boolean) {
             tvName.text = file.name
-            tvSize.text = FileUtils.formatFileSize(file.size)
+            tvSize.text = file.size.toReadableFileSize()
+            ivSelectionCheck.isVisible = isSelected
 
+            linearBody.shapeAppearanceModel = createCornerShape(position)
 
-            if (isSelected) {
-                itemLayout.setBackgroundColor(
-                    ContextCompat.getColor(
-                        itemView.context,
-                        R.color.file_item_selected_background
-                    )
-                )
-                ivSelectionCheck.visibility = View.VISIBLE
-            } else {
-                itemLayout.setBackgroundColor(
-                    ContextCompat.getColor(
-                        itemView.context,
-                        R.color.default_file_item_background
-                    )
-                )
+            itemView.setOnClickListener { onItemClick(file, position) }
+            itemView.setOnLongClickListener { onItemLongClick(file, position) }
+        }
 
-                ivSelectionCheck.visibility = View.GONE
-            }
+        private fun createCornerShape(position: Int): ShapeAppearanceModel {
+            val dp = itemView.resources.displayMetrics.density
+            val corners = when {
+                itemCount == 1 -> listOf(18f, 18f, 18f, 18f)
+                position == 0 -> listOf(18f, 18f, 6f, 6f)
+                position == itemCount - 1 -> listOf(6f, 6f, 18f, 18f)
+                else -> listOf(6f, 6f, 6f, 6f)
+            }.map { it * dp }
 
-            itemView.setOnClickListener {
-                onItemClick(file, position)
-            }
-            itemView.setOnLongClickListener {
-                onItemLongClick(file, position)
-            }
+            return ShapeAppearanceModel.builder().setTopLeftCorner(CornerFamily.ROUNDED, corners[0])
+                .setTopRightCorner(CornerFamily.ROUNDED, corners[1])
+                .setBottomLeftCorner(CornerFamily.ROUNDED, corners[2])
+                .setBottomRightCorner(CornerFamily.ROUNDED, corners[3]).build()
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_file, parent, false)
-        return ViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_file, parent, false)
+    )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(files[position], position, selectedItems.contains(position))
+        holder.bind(files[position], position, position in selectedItems)
     }
 
-    override fun getItemCount(): Int = files.size
+    override fun getItemCount() = files.size
 
     fun updateFiles(newFiles: List<FileItem>) {
         files = newFiles
-        selectedItems.clear() // Clear selection on new data
+        selectedItems.clear()
         notifyDataSetChanged()
     }
 
     fun toggleSelection(position: Int) {
-        if (selectedItems.contains(position)) {
-            selectedItems.remove(position)
-        } else {
-            selectedItems.add(position)
-        }
+        if (position in selectedItems) selectedItems.remove(position)
+        else selectedItems.add(position)
         notifyItemChanged(position)
     }
 
-    fun getSelectedFileItems(): List<FileItem> {
-        return selectedItems.map { files[it] }
-    }
+    fun getSelectedFileItems() = selectedItems.map { files[it] }
 
-    fun getSelectedItemCount(): Int {
-        return selectedItems.size
-    }
+    fun getSelectedItemCount() = selectedItems.size
 
     fun clearSelections() {
         selectedItems.clear()
-        notifyDataSetChanged() // To redraw all items to their non-selected state
-    }
-    fun getFileItem(position: Int): FileItem? {
-        return files.getOrNull(position)
+        notifyDataSetChanged()
     }
 
+    fun getFileItem(position: Int) = files.getOrNull(position)
+
     fun selectAll() {
-        if (selectedItems.size == files.size) { // If all are selected, deselect all
-            selectedItems.clear()
-        } else { // Otherwise, select all
-            files.forEachIndexed { index, _ -> selectedItems.add(index) }
-        }
+        if (selectedItems.size == files.size) selectedItems.clear()
+        else selectedItems.addAll(files.indices)
         notifyDataSetChanged()
     }
 }
